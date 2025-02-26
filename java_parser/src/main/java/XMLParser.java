@@ -33,23 +33,18 @@ public class XMLParser {
     factory.setValidating(true);
     factory.setNamespaceAware(true);
 
-    // Kontrolle ob XML-Dateien existieren, File Array erstellen
     if (xmlFiles == null || xmlFiles.length == 0) {
       System.out.println("No XML Data.");
       System.exit(0);
     }
 
-    // Über die Dateien iterieren und diese parsen
     for (File xmlFile : xmlFiles) {
       try {
         SAXParser saxParser = factory.newSAXParser();
         System.out.println("Current Data: " + xmlFile.getName());
 
-        // Parse die Datei mit dem benutzerdefinierten Handler
         XMLHandler handler = new XMLHandler();
         saxParser.parse(xmlFile, handler);
-
-        // Daten in die Liste hinzufügen
         xmlData.add(handler.getData());
 
         System.out.println("The Data is successfully parsed: " + xmlFile.getName());
@@ -60,7 +55,6 @@ public class XMLParser {
       }
     }
 
-    // Proceed to calculate statistics and write XML file if no errors occurred
     repeaters();
     writeToXMLFile();
   }
@@ -86,10 +80,10 @@ public class XMLParser {
     System.out.println("Total feedback count: " + contentCount);
   }
 
-  private static boolean writeToFile = true;  // 이 변수로 파일을 작성할지 여부를 제어합니다.
+  private static boolean writeToFile = true;
 
   private static void writeToXMLFile() {
-    if (!writeToFile) {  // 유효하지 않은 값이 발견되면 파일 작성 중단
+    if (!writeToFile) {
       System.err.println("Skipping file write due to invalid data.");
       return;
     }
@@ -108,7 +102,6 @@ public class XMLParser {
         }
 
 
-        // valid data에 대한 XML 생성 로직 계속...
         Element feedback = doc.createElement("feedback");
         root.appendChild(feedback);
 
@@ -120,23 +113,23 @@ public class XMLParser {
           String nachname = data.getOrDefault("nachname", "");
           if (!validateName(vorname)) {
             System.err.println("Invalid first name: " + vorname);
-            writeToFile = false;  // 유효하지 않은 데이터가 있을 경우, 파일 작성 중단
-            return;  // 즉시 파일 작성 중단
+            writeToFile = false;
+            return;
           } else {
             visitor.setAttribute("vorname", vorname);
           }
           if (!validateName(nachname)) {
             System.err.println("Invalid last name: " + nachname);
-            writeToFile = false;  // 유효하지 않은 데이터가 있을 경우, 파일 작성 중단
-            return;  // 즉시 파일 작성 중단
+            writeToFile = false;
+            return;
           } else {
             visitor.setAttribute("nachname", nachname);
           }
 
         } catch (IllegalArgumentException e) {
           System.err.println("Invalid content rating found, skipping record: " + e.getMessage());
-          writeToFile = false;  // 유효하지 않은 데이터가 있을 경우, 파일 작성 중단
-          return;  // 즉시 파일 작성 중단
+          writeToFile = false;
+          return;
         }
 
 
@@ -153,21 +146,6 @@ public class XMLParser {
 
         Element rating = doc.createElement("bewertung");
         rating.setAttribute("erneuter_besuch", mapBooleanToString(data.get("erneuter_besuch")));
-
-//        try {
-          String contentRating = data.get("note_inhalt");
-//          if (contentRating != null && !validateNoteInhalt(contentRating)) {
-//            System.err.println("Invalid content rating, skipping this record: " + contentRating);
-//            writeToFile = false;  // 유효하지 않은 데이터가 있을 경우, 파일 작성 중단
-//            return;  // 즉시 파일 작성 중단
-//          } else {
-            rating.setAttribute("note_inhalt", contentRating);
-//          }
-//        } catch (IllegalArgumentException e) {
-//          System.err.println("Invalid content rating found, skipping record: " + e.getMessage());
-//          writeToFile = false;  // 유효하지 않은 데이터가 있을 경우, 파일 작성 중단
-//          return;  // 즉시 파일 작성 중단
-//        }
 
         rating.setAttribute("note_aussehen", data.get("note_aussehen"));
         optional(doc, rating, "vorschlag", data.get("vorschlag"));
@@ -213,18 +191,15 @@ public class XMLParser {
 
       SAXParser saxParser = factory.newSAXParser();
 
-      // Error-Handler
       DefaultHandler handler = new DefaultHandler() {
         @Override
         public void error(SAXParseException e) throws SAXException {
           System.out.println("Failed to validate: " + e.getMessage());
-          // Optional: Log the error without stopping the validation
         }
 
         @Override
         public void fatalError(SAXParseException e) throws SAXException {
           System.out.println("Fatal error: " + e.getMessage());
-          // Optional: Log the fatal error without stopping the validation
         }
 
         @Override
@@ -233,7 +208,6 @@ public class XMLParser {
         }
       };
 
-      // XML-Datei validieren
       saxParser.parse(new File(filePath), handler);
       System.out.println("The current XML data is successfully validated");
     } catch (Exception e) {
