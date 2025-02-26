@@ -16,10 +16,10 @@ import java.util.Map;
 
 public class XMLParser {
   private static final ArrayList<Map<String, String>> xmlData = new ArrayList<>();
-  private static final String OUTPUT_FILE = "C:\\xampp1\\htdocs\\ins_project\\outputfile.xml";
+  private static final String OUTPUT_FILE = "C:\\xampp\\htdocs\\outputfile.xml";
 
   public static void main(String[] args) {
-    String directoryPath = "C:\\XAMPP1\\htdocs\\ins_project"; //not "XAMPP", but "XAMPP1"!
+    String directoryPath = "C:\\xampp\\htdocs"; 
     File directory = new File(directoryPath);
 
     File[] xmlFiles = directory.listFiles((dir, name) -> name.toLowerCase().startsWith("feedback_") && name.toLowerCase().endsWith(".xml"));
@@ -244,17 +244,6 @@ public class XMLParser {
   private static boolean validateName(String value) {
     return value != null && !value.trim().isEmpty();
   }
-
-//  private static boolean validateNoteInhalt(String value) {
-//    String[] validValues = {"sehr_gut", "gut", "befriedigend", "ausreichend", "mangelhaft", "ungenuegend"};
-//    for (String validValue : validValues) {
-//      if (validValue.equals(value)) {
-//        return true;
-//      }
-//    }
-//    throw new IllegalArgumentException("Invalid note_inhalt value: " + value);
-//  }
-
 
   private static void optional(Document doc, Element parent, String elementName, String value) {
     if (value != null && !value.isEmpty()) {
